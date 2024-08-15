@@ -133,11 +133,11 @@ int main(){
 
         //Drawing
         ClearBackground(Green);
+        DrawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, WHITE);
+        DrawCircleLines(screenWidth / 2, screenHeight / 2, 100, WHITE);
         ball.Draw();
         player.Draw();
         bot.Draw();
-        DrawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, WHITE);
-        DrawCircleLines(screenWidth / 2, screenHeight / 2, 100, WHITE);
         DrawText(TextFormat("%i", playserScore), screenWidth / 4, screenHeight - 60, 40, WHITE);
         DrawText(TextFormat("%i", botScore), 3 * screenWidth / 4, screenHeight - 60, 40, WHITE);
 
