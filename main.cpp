@@ -15,16 +15,21 @@ class Ball{
             x += speedX;
             y += speedY;
 
-            if(y + radius >= GetScreenHeight() || y - radius <= 0){
+            if (y + radius >= GetScreenHeight() || y - radius <= 0){
                 speedY *= -1;
             }
-            if(x + radius >= GetScreenWidth() || x - radius <= 0){
+            if (x + radius >= GetScreenWidth() || x - radius <= 0){
                 speedX *= -1;
             }
         }
 };
 
 class Paddle{
+    protected:
+        void ClampMovement(){
+            y = Clamp(y, 0, GetScreenHeight() - h);
+        }
+
     public:
         float x, y;
         float w, h;
@@ -35,19 +40,29 @@ class Paddle{
         }
 
         void Update(){
-            if(IsKeyDown(KEY_W)){
+            if (IsKeyDown(KEY_W)){
                 y = y - speed;
             }
-            if(IsKeyDown(KEY_S)){
+            if (IsKeyDown(KEY_S)){
                 y = y + speed;
             }
 
-            y = Clamp(y, 0, GetScreenHeight() - h);
+            ClampMovement();
         }
 };
 
 class CpuPaddle: public Paddle{
+    public:
+        void Update(float ballY){
+            if (y + h / 2 > ballY){
+                y = y - speed;
+            }
+            if (y + h / 2 <= ballY){
+                y = y + speed;
+            }
 
+            ClampMovement();
+        }
 };
 
 Ball ball;
@@ -86,6 +101,7 @@ int main(){
         // Updating
         player.Update();
         ball.Update();
+        bot.Update(ball.y);
 
         //Drawing
         ClearBackground(BLACK);
