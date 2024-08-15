@@ -1,6 +1,12 @@
 #include <raylib.h>
 #include <raymath.h>
 
+Color Blue = {0, 110, 255, 255};
+Color Green = {20, 160, 133, 255};
+
+int playserScore = 0;
+int botScore = 0;
+
 class Ball{
     public:
         float x, y;
@@ -8,7 +14,7 @@ class Ball{
         int radius;
 
         void Draw(){
-            DrawCircle(x, y, radius, WHITE);
+            DrawCircle(x, y, radius, Blue);
         }
 
         void Update(){
@@ -18,9 +24,23 @@ class Ball{
             if (y + radius >= GetScreenHeight() || y - radius <= 0){
                 speedY *= -1;
             }
-            if (x + radius >= GetScreenWidth() || x - radius <= 0){
-                speedX *= -1;
+            if (x + radius >= GetScreenWidth()){
+                playserScore++;
+                Reset();
             }
+            if (x - radius <= 0){
+                botScore++;
+                Reset();
+            }
+        }
+
+        void Reset(){
+            x = GetScreenWidth() / 2;
+            y = GetScreenHeight() / 2;
+
+            int dirChoices[2] = {-1, 1};
+            speedX *= dirChoices[GetRandomValue(0, 1)];
+            speedY *= dirChoices[GetRandomValue(0, 1)];
         }
 };
 
@@ -36,7 +56,7 @@ class Paddle{
         int speed;
 
         void Draw(){
-            DrawRectangle(x, y, w, h, WHITE);
+            DrawRectangleRounded(Rectangle{x, y, w, h}, 0.8, 0, WHITE);
         }
 
         void Update(){
@@ -103,12 +123,23 @@ int main(){
         ball.Update();
         bot.Update(ball.y);
 
+        // Collision checking
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{player.x, player.y, player.w, player.h})){
+            ball.speedX *= -1;
+        }
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{bot.x, bot.y, bot.w, bot.h})){
+            ball.speedX *= -1;
+        }
+
         //Drawing
-        ClearBackground(BLACK);
+        ClearBackground(Green);
         ball.Draw();
         player.Draw();
         bot.Draw();
         DrawLine(screenWidth / 2, 0, screenWidth / 2, screenHeight, WHITE);
+        DrawCircleLines(screenWidth / 2, screenHeight / 2, 100, WHITE);
+        DrawText(TextFormat("%i", playserScore), screenWidth / 4, screenHeight - 60, 40, WHITE);
+        DrawText(TextFormat("%i", botScore), 3 * screenWidth / 4, screenHeight - 60, 40, WHITE);
 
         EndDrawing();
     }
